@@ -1,75 +1,103 @@
 import React from 'react';
-import { Calculator, TrendingUp, PieChart, Settings, HelpCircle } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { LayoutDashboard, Calculator, User, CreditCard, HelpCircle, FileText } from 'lucide-react';
 
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+export const Sidebar: React.FC = () => {
+  const location = useLocation();
+  
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const menuItems = [
-    { icon: Calculator, label: 'Calculator', active: true },
-    { icon: TrendingUp, label: 'Portfolio', active: false },
-    { icon: PieChart, label: 'Analytics', active: false },
-    { icon: Settings, label: 'Settings', active: false },
-    { icon: HelpCircle, label: 'Help', active: false },
+  const navItems = [
+    {
+      name: 'Dashboard',
+      path: '/',
+      icon: <LayoutDashboard className="w-5 h-5" />,
+    },
+    {
+      name: 'Calculator',
+      path: '/calculator',
+      icon: <Calculator className="w-5 h-5" />,
+    },
+    {
+      name: 'Profile',
+      path: '/profile',
+      icon: <User className="w-5 h-5" />,
+    },
+    {
+      name: 'Subscription',
+      path: '/subscription',
+      icon: <CreditCard className="w-5 h-5" />,
+    },
   ];
 
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-          onClick={onClose}
-        />
-      )}
-      
-      {/* Sidebar */}
-      <aside className={`
-        fixed md:static top-0 left-0 h-full w-64 bg-dark-surface border-r border-dark-border z-50
-        transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-      `}>
-        <div className="p-4">
-          <div className="space-y-2">
-            {menuItems.map((item, index) => (
-              <button
-                key={index}
-                className={`
-                  w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors
-                  ${item.active 
-                    ? 'bg-dark-accent text-white' 
-                    : 'text-dark-text-secondary hover:text-dark-text-primary hover:bg-dark-card'
-                  }
-                `}
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </div>
+    <div className="hidden md:flex md:flex-col md:w-64 md:bg-dark-card md:border-r md:border-dark-border">
+      <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+        <div className="flex-shrink-0 px-4 flex items-center">
+          <Link to="/" className="flex items-center">
+            <span className="text-xl font-bold text-dark-accent">LeverageCalc</span>
+            <span className="text-xl font-bold text-dark-text-primary ml-1">Pro</span>
+          </Link>
         </div>
         
-        {/* Portfolio Summary */}
-        <div className="p-4 border-t border-dark-border mt-6">
-          <h3 className="text-sm font-medium text-dark-text-secondary mb-3">Portfolio Summary</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-sm text-dark-text-secondary">Total Balance</span>
-              <span className="text-sm text-dark-text-primary font-medium">$10,000.00</span>
+        <nav className="mt-8 flex-1 px-4 space-y-1">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`group flex items-center px-3 py-2 rounded-md ${
+                isActive(item.path)
+                  ? 'bg-dark-accent/10 text-dark-accent'
+                  : 'text-dark-text-secondary hover:text-dark-text-primary hover:bg-dark-surface'
+              }`}
+            >
+              {item.icon}
+              <span className="ml-3">{item.name}</span>
+            </Link>
+          ))}
+        </nav>
+        
+        <div className="mt-auto px-4 pb-6">
+          <div className="space-y-1">
+            <a
+              href="#"
+              className="group flex items-center px-3 py-2 rounded-md text-dark-text-secondary hover:text-dark-text-primary hover:bg-dark-surface"
+            >
+              <HelpCircle className="w-5 h-5" />
+              <span className="ml-3">Help & Support</span>
+            </a>
+            
+            <a
+              href="#"
+              className="group flex items-center px-3 py-2 rounded-md text-dark-text-secondary hover:text-dark-text-primary hover:bg-dark-surface"
+            >
+              <FileText className="w-5 h-5" />
+              <span className="ml-3">Documentation</span>
+            </a>
+          </div>
+          
+          <div className="mt-6 px-3 py-3 bg-dark-surface rounded-md">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <CreditCard className="w-5 h-5 text-dark-accent" />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-dark-text-primary">Upgrade to Pro</p>
+                <p className="text-xs text-dark-text-secondary">Get advanced features</p>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-dark-text-secondary">Available Margin</span>
-              <span className="text-sm text-dark-accent font-medium">$8,500.00</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-dark-text-secondary">P&L Today</span>
-              <span className="text-sm text-green-400 font-medium">+$125.50</span>
-            </div>
+            <Link
+              to="/subscription"
+              className="mt-2 block text-center px-3 py-1.5 text-sm font-medium text-white bg-dark-accent rounded-md hover:bg-dark-accent/90"
+            >
+              View Plans
+            </Link>
           </div>
         </div>
-      </aside>
-    </>
+      </div>
+    </div>
   );
 };
+
